@@ -85,6 +85,10 @@ $configdesc = '';
 $configdefault = 'authcode';
 $settings->add(new \auth_azureb2c\form\adminsetting\loginflow('auth_azureb2c/loginflow', $configkey, $configdesc, $configdefault));
 
+$label = new lang_string('cfg_hybridflow_key', 'auth_azureb2c');
+$desc = new lang_string('cfg_hybridflow_desc', 'auth_azureb2c');
+$settings->add(new \admin_setting_configcheckbox('auth_azureb2c/hybridflow', $label, $desc, '0'));
+
 $configkey = new lang_string('cfg_userrestrictions_key', 'auth_azureb2c');
 $configdesc = new lang_string('cfg_userrestrictions_desc', 'auth_azureb2c');
 $configdefault = '';

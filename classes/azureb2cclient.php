@@ -141,6 +141,12 @@ class azureb2cclient {
             'redirect_uri' => $this->redirecturi,
             'ui_locales' => $lang
         ];
+
+        $hybridflow = get_config('auth_azureb2c', 'hybridflow');
+        if ($hybridflow) {
+            $params['response_type'] = 'code id_token';
+		}
+
         if ($promptlogin === true) {
             $params['prompt'] = 'login';
         }
