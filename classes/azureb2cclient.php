@@ -145,6 +145,12 @@ class azureb2cclient {
             'ui_locales' => $lang
         ];
 
+        $hybridflow = get_config('auth_azureb2c', 'hybridflow');
+        if ($hybridflow) {
+            $params['response_type'] = 'code id_token';
+		}
+
+
         // bypass login prompt for silent login mode
         $silentloginmode = get_config('auth_azureb2c', 'silentloginmode');
 		$source = optional_param('source', '', PARAM_RAW);
