@@ -150,18 +150,16 @@ class azureb2cclient {
             $params['response_type'] = 'code id_token';
 		}
 
-
-        // bypass login prompt for silent login mode
-        $silentloginmode = get_config('auth_azureb2c', 'silentloginmode');
-		$source = optional_param('source', '', PARAM_RAW);
-		if ($silentloginmode && $source != 'loginpage') {
+        if ($promptlogin === true) {
+            $params['prompt'] = 'login';
+        } else {
+            $silentloginmode = get_config('auth_azureb2c', 'silentloginmode');
+            $source = optional_param('source', '', PARAM_RAW);
+            if ($silentloginmode && $source != 'loginpage') {
                 $params['prompt'] = 'none';
-            } else {
-            if ($promptlogin === true) {
-                $params['prompt'] = 'login';
             }
         }
-        
+
         $domainhint = get_config('auth_azureb2c', 'domainhint');
         if (!empty($domainhint)) {
             $params['domain_hint'] = $domainhint;
