@@ -145,12 +145,8 @@ class azureb2cclient {
             'ui_locales' => $lang
         ];
 
-        // ensure not allow prompt login for forced redirection
-        $forceredirect = get_config('auth_azureb2c', 'forceredirect');
-        if ($forceredirect) {
-            if ($promptlogin === true) {
-                $params['prompt'] = 'login';
-            }
+        if ($promptlogin === true) {
+            $params['prompt'] = 'login';
         }
 
         $domainhint = get_config('auth_azureb2c', 'domainhint');
