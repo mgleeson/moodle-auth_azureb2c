@@ -85,6 +85,12 @@ $configdesc = '';
 $configdefault = 'authcode';
 $settings->add(new \auth_azureb2c\form\adminsetting\loginflow('auth_azureb2c/loginflow', $configkey, $configdesc, $configdefault));
 
+// Force SSO Redirect to Azure B2C login
+$configkey = new lang_string('cfg_forceredirect_key', 'auth_azureb2c');
+$configdesc = new lang_string('cfg_forceredirect_desc', 'auth_azureb2c');
+$configdefault = '0';
+$settings->add(new \admin_setting_configcheckbox('auth_azureb2c/forceredirect', $configkey, $configdesc, $configdefault));
+
 $configkey = new lang_string('cfg_userrestrictions_key', 'auth_azureb2c');
 $configdesc = new lang_string('cfg_userrestrictions_desc', 'auth_azureb2c');
 $configdefault = '';

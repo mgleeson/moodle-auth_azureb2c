@@ -36,6 +36,9 @@ class auth_plugin_azureb2c extends \auth_plugin_base {
     /** @var object Plugin config. */
     public $config;
 
+    /** @var object loginflow */
+    public $loginflow;
+
     /**
      * Constructor.
      */
@@ -219,4 +222,60 @@ class auth_plugin_azureb2c extends \auth_plugin_base {
         $params = [time() - (5 * 60)];
         $DB->delete_records_select('auth_azureb2c_state', 'timecreated < ?', $params);
     }
+
+    public function should_login_redirect() {
+        global $CFG, $SESSION;
+
+        // azureb2c login can be bypassed by any of the following query string keys/values:
+        // azureb2c=0 or noredirect=1 or locallogin=1
+        $azureb2c = optional_param('azureb2c', null, PARAM_BOOL);
+        $noredirect = optional_param('noredirect', 0, PARAM_BOOL);
+        $locallogin = optional_param('locallogin', 0, PARAM_BOOL);
+        if (!empty($noredirect) || !empty($locallogin)) {
+            $azureb2c = 0;
+        }
+        // Check if forceredirect is enabled first - don't redirect if forceredirect is disabled.
+        if (!isset($this->config->forceredirect) || !$this->config->forceredirect) {
+            return false; 
+        }
+        // Don't redirect if the request is a POST request (doing so could prevent alternate login pages).
+        if (isset($_SERVER['REQUEST_METHOD']) && ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+            return false;
+        }
+
+        // Check if login page skipped already so we don't end up in a loop.
+        if ((isset($SESSION->azureb2c) && $SESSION->azureb2c == 0)) {
+            return false;
+        }
+
+        // Don't redirect to SSO in the case that the user is sent to the login page after logging out.
+        $forceredirectsetting = get_config('auth_azureb2c', 'forceredirect');
+        $forceloginsetting = get_config('core', 'forcelogin');
+        if ($forceredirectsetting &&
+            $forceloginsetting && 
+            isset($_SERVER['HTTP_REFERER']) && 
+            strpos($_SERVER['HTTP_REFERER'], $CFG->wwwroot) !== false) {
+            return false;
+        }
+
+        // Do not redirect if azureb2c is set to 0 (disabled) signifying an SSO bypass.
+        if ($azureb2c === 0) {
+            $SESSION->azureb2c = $azureb2c;
+            return false;
+        }
+        // Unset the session variable so we don't end up in a loop when re-entering the login page.
+        if (isset($SESSION->azureb2c)) {
+            unset($SESSION->azureb2c);
+        }
+        // no SSO bypass is set, so we redirect to the Azure AD login page.
+        return true;
+    }
+
+    public function pre_loginpage_hook() {
+        if ($this->should_login_redirect()) {
+            $this->loginflow->handleredirect();
+        }
+    }
+    
+
 }

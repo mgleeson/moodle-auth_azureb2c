@@ -42,6 +42,9 @@ class azureb2cclient {
     /** @var array Array of endpoints. */
     protected $endpoints = [];
 
+    /** @var string Resource */
+    protected $resource;
+
     /**
      * Constructor.
      *
@@ -141,8 +144,13 @@ class azureb2cclient {
             'redirect_uri' => $this->redirecturi,
             'ui_locales' => $lang
         ];
-        if ($promptlogin === true) {
-            $params['prompt'] = 'login';
+
+        // ensure not allow prompt login for forced redirection
+        $forceredirect = get_config('auth_azureb2c', 'forceredirect');
+        if ($forceredirect) {
+            if ($promptlogin === true) {
+                $params['prompt'] = 'login';
+            }
         }
 
         $domainhint = get_config('auth_azureb2c', 'domainhint');

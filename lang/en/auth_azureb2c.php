@@ -173,3 +173,8 @@ $string['ucp_o365accountconnected'] = 'This Azure AD B2C account is already conn
 $string['source_of_info'] = "How did you learn about us?";
 $string['gender'] = "Gender";
 $string['lang'] = "Language";
+
+
+// Strings for force SSO redirect
+$string['cfg_forceredirect_key'] = 'Force redirect';
+$string['cfg_forceredirect_desc'] = 'If enabled, will skip the login index page and redirect to the Azure B2C login page. Can be bypassed with ?noredirect=1 URL param';
