@@ -91,6 +91,13 @@ $configdesc = new lang_string('cfg_forceredirect_desc', 'auth_azureb2c');
 $configdefault = '0';
 $settings->add(new \admin_setting_configcheckbox('auth_azureb2c/forceredirect', $configkey, $configdesc, $configdefault));
 
+// Silent login mode (bypass SSO login page for already logged in user)
+$configkey = new lang_string('cfg_silentloginmode_key', 'auth_azureb2c');
+$configdesc = new lang_string('cfg_silentloginmode_desc', 'auth_azureb2c');
+$configdefault = '0';
+$forceloginconfigurl = new moodle_url('/admin/settings.php', ['section' => 'sitepolicies']);
+$settings->add(new admin_setting_configcheckbox('auth_azureb2c/silentloginmode', $configkey, $configdesc, $configdefault));
+
 $configkey = new lang_string('cfg_userrestrictions_key', 'auth_azureb2c');
 $configdesc = new lang_string('cfg_userrestrictions_desc', 'auth_azureb2c');
 $configdefault = '';

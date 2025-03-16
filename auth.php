@@ -250,8 +250,10 @@ class auth_plugin_azureb2c extends \auth_plugin_base {
 
         // Don't redirect to SSO in the case that the user is sent to the login page after logging out.
         $forceredirectsetting = get_config('auth_azureb2c', 'forceredirect');
+        $silentloginmodesetting = get_config('auth_azureb2c', 'silentloginmode');
         $forceloginsetting = get_config('core', 'forcelogin');
         if ($forceredirectsetting &&
+            $silentloginmodesetting &&
             $forceloginsetting && 
             isset($_SERVER['HTTP_REFERER']) && 
             strpos($_SERVER['HTTP_REFERER'], $CFG->wwwroot) !== false) {

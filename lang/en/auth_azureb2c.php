@@ -175,6 +175,14 @@ $string['gender'] = "Gender";
 $string['lang'] = "Language";
 
 
-// Strings for force SSO redirect
+// Strings for force SSO redirect and silent login
 $string['cfg_forceredirect_key'] = 'Force redirect';
 $string['cfg_forceredirect_desc'] = 'If enabled, will skip the login index page and redirect to the Azure B2C login page. Can be bypassed with ?noredirect=1 URL param';
+$string['cfg_silentloginmode_key'] = 'Silent login mode';
+$string['cfg_silentloginmode_desc'] = 'Bypass the SSO login page for already logged in users.
+<br />If enabled, Moodle will try to use the active session of a user authenticated to the configured authorization endpoint to log the user in.<br/>
+To use this feature, the following configurations are required:
+<ul>
+<li><b>Force users to log in</b> (forcelogin) in the <a href="{$a}" target="_blank">Site policies section</a> is enabled.</li>
+<li><b>Force redirect</b> (auth_azureb2c/forceredirect) setting above is enabled.</li>
+</ul>';
