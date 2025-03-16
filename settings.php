@@ -85,9 +85,11 @@ $configdesc = '';
 $configdefault = 'authcode';
 $settings->add(new \auth_azureb2c\form\adminsetting\loginflow('auth_azureb2c/loginflow', $configkey, $configdesc, $configdefault));
 
-$label = new lang_string('cfg_hybridflow_key', 'auth_azureb2c');
-$desc = new lang_string('cfg_hybridflow_desc', 'auth_azureb2c');
-$settings->add(new \admin_setting_configcheckbox('auth_azureb2c/hybridflow', $label, $desc, '0'));
+// Option to enable hybrid flow
+$configkey = new lang_string('cfg_hybridflow_key', 'auth_azureb2c');
+$configdesc = new lang_string('cfg_hybridflow_desc', 'auth_azureb2c');
+$configdefault = '0';
+$settings->add(new \admin_setting_configcheckbox('auth_azureb2c/hybridflow', $configkey, $configdesc, $configdefault));
 
 // Force SSO Redirect to Azure B2C login
 $configkey = new lang_string('cfg_forceredirect_key', 'auth_azureb2c');
