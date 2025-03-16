@@ -431,14 +431,17 @@ class authcode extends \auth_azureb2c\loginflow\base {
         $tokenrec = $DB->get_record('auth_azureb2c_token', ['azureb2cuniqid' => $azureb2cuniqid]);
         if (!empty($tokenrec)) {
             // Already connected user.
+            debugging('Notice: already connected user.', DEBUG_DEVELOPER);
 
             if (empty($tokenrec->userid)) {
                 // Existing token record, but missing the user ID.
+                debugging('ERROR: Existing token record but missing the user ID. Formerly ERROR1', DEBUG_DEVELOPER);
                 $user = $DB->get_record('user', ['username' => $tokenrec->username]);
 
                 if (empty($user)) {
                     // Token exists, but it doesn't have a valid username.
                     // In this case, delete the token, and try to process login again.
+                    debugging('ERROR: Token exists, but does not have a valid username. Deleting token and tring to process login again.', DEBUG_DEVELOPER);
                     $DB->delete_records('auth_azureb2c_token', ['id' => $tokenrec->id]);
                     return $this->handlelogin($azureb2cuniqid, $authparams, $tokenparams, $idtoken);
                 }
@@ -453,6 +456,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
                     $event = \core\event\user_login_failed::create($eventdata);
                     $event->trigger();
                     // Token is invalid, delete it.
+                    debugging('ERROR: Token is invalid, deleting it. Formerly ERROR2', DEBUG_DEVELOPER);
                     $DB->delete_records('auth_azureb2c_token', ['id' => $tokenrec->id]);
                     return $this->handlelogin($azureb2cuniqid, $authparams, $tokenparams, $idtoken);
                 }
@@ -468,6 +472,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
             // Possibilities:
             //     - Matched user.
             //     - New user (maybe create).
+            debugging('No existing token, user not connected. Possible matched user, or new user.', DEBUG_DEVELOPER);
 
             // Generate a Moodle username.
             // Use 'upn' if available for username (Azure-specific), or fall back to lower-case azureb2cuniqid.
@@ -481,7 +486,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
             $matchedwith = $this->check_for_matched($username);
             if (!empty($matchedwith)) {
                 $matchedwith->aadupn = $username;
-                throw new \moodle_exception('errorusermatched', 'local_o365', null, $matchedwith);
+                throw new \moodle_exception('errorazureb2ccall_message', 'auth_azureb2c', null, 'Failed to match user; matchedwith='.$matchedwith);
             }
             $username = trim(\core_text::strtolower($username));
             $tokenrec = $this->createtoken($azureb2cuniqid, $username, $authparams, $tokenparams, $idtoken);
@@ -489,6 +494,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
             $existinguserparams = ['username' => $username, 'mnethostid' => $CFG->mnet_localhost_id];
             if ($DB->record_exists('user', $existinguserparams) !== true) {
                 // User does not exist. Create user if site allows, otherwise fail.
+                debugging('User does not exist. Create new user if site allows. Otherwise fail.', DEBUG_DEVELOPER);
                 if (empty($CFG->authpreventaccountcreation)) {
                     if (!$CFG->allowaccountssameemail) {
                         $info = $this->get_userinfo($username);
@@ -499,6 +505,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
                     $user = create_user_record($username, null, 'azureb2c');
                 } else {
                     // Trigger login failed event.
+                    debugging('Trigger login failed event.', DEBUG_DEVELOPER);
                     $failurereason = AUTH_LOGIN_NOUSER;
                     $eventdata = ['other' => ['username' => $username, 'reason' => $failurereason]];
                     $event = \core\event\user_login_failed::create($eventdata);
@@ -511,6 +518,7 @@ class authcode extends \auth_azureb2c\loginflow\base {
 
             if (!empty($user)) {
                 complete_user_login($user);
+                debugging('User logged in successfully.', DEBUG_DEVELOPER);
                 return true;
             } else {
                 if (!empty($tokenrec)) {
